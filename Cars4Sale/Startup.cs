@@ -1,3 +1,4 @@
+using Cars4Sale.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,12 @@ namespace Cars4Sale
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddAuthentication().AddMicrosoftAccount(o => 
+            {
+                o.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                o.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+            });
+            services.AddControllers(options => options.Filters.Add(new HttpResponseExceptionFilter()));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {
@@ -42,7 +48,7 @@ namespace Cars4Sale
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger(c => c.RouteTemplate = "api/Cars4Sale/{documentname}/swagger.json");
@@ -51,9 +57,9 @@ namespace Cars4Sale
                 c.RoutePrefix = "api/Cars4Sale";
             });
 
-            //app.UseHttpsRedirection();
-
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
