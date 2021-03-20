@@ -4,6 +4,7 @@ WORKDIR /source
 
 COPY *.sln .
 COPY Cars4Sale/*.csproj ./Cars4Sale/
+COPY Cars4SaleTests/*.csproj ./Cars4SaleTests/
 RUN dotnet restore
 
 
