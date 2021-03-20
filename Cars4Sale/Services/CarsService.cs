@@ -99,7 +99,7 @@ namespace Cars4Sale.Services
         private (Car, ApiError?) CheckAccess(ApiClient current_client, Guid car_id)
         {
             return (!_carsRepository.TryGetValue(car_id, out Car car) || car.Client.ApiKey != current_client.ApiKey)
-                ? (null, ApiError.Forbidden($"Car (ID {car_id}) is not under control of ${current_client.DealerName} or it does not exist"))
+                ? (null, ApiError.Forbidden($"Car (ID {car_id}) is not under control of {current_client.DealerName} or it does not exist"))
                 : (car, null);
         }
     }
