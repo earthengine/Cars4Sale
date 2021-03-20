@@ -25,6 +25,7 @@ namespace Cars4Sale
         {
             services.AddMvc();
             services.AddScoped<ICarsService, CarsService>();
+            services.AddScoped<ICarsRepository, CarsRepository>();
 
             services.AddSwaggerGen(c =>
             {

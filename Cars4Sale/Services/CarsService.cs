@@ -1,43 +1,28 @@
 ﻿using Cars4Sale.Models;
 using Cars4Sale.Services.Interfaces;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Cars4Sale.Services
 {
-    public class CarsService: IServiceProvider, ICarsService
+    public class CarsService: ICarsService
     {
-        private ConcurrentDictionary<Guid, Car> _Cars = new ConcurrentDictionary<Guid, Car>(new Dictionary<Guid, Car> {
-            { new Guid("CAEACA2D-E407-49E3-8DDE-937A678B387B"), new Car {
-                Id = new Guid("CAEACA2D-E407-49E3-8DDE-937A678B387B"),
-                Make = "Toyota",
-                Model = "Corola",
-                Year = 2015,
-                Stock = 20,
-                Client = ApiClient.Clients.Values.ToArray()[0] }
-            },
-            { new Guid("7632CBE9-0F16-4A30-9A17-FAEA4B4DE169"), new Car {
-                Id = new Guid("7632CBE9-0F16-4A30-9A17-FAEA4B4DE169"),
-                Make = "Carl Benz",
-                Model = "Benz Patent Motor",
-                Year = 1886,
-                Stock = 1,
-                Client = ApiClient.Clients.Values.ToArray()[1] }
-            },
-        });
+        private readonly ICarsRepository _carsRepository;
+        public CarsService(ICarsRepository carsRepository)
+        {
+            _carsRepository = carsRepository;
+        }
 
         public IEnumerable<Car> Get()
         {
-            return _Cars.Values;
+            return _carsRepository.Values;
         }
 
         public (Car, ApiError?) Get(Guid car_id)
         {
-            if (_Cars.ContainsKey(car_id))
+            if (_carsRepository.ContainsKey(car_id))
             {
-                return (_Cars[car_id], null);
+                return (_carsRepository.Get(car_id), null);
             }
             return (null, ApiError.NotFound($"Car {car_id} does not exist"));
         }
@@ -67,7 +52,7 @@ namespace Cars4Sale.Services
                 Year = new_car.Year,
                 Stock = new_car.Stock,
             };
-            if (!_Cars.TryAdd(car.Id, car))
+            if (!_carsRepository.TryAdd(car.Id, car))
             {
                 // We don't know what's going on; this shouldn't happen
                 return (null, ApiError.Internal($"Unexpected error: failed to add new car"));
@@ -80,7 +65,7 @@ namespace Cars4Sale.Services
             (var _, var maybe_error) = CheckAccess(current_client, car_id);
             if (maybe_error is ApiError error) { return (null, error); }
 
-            if (!_Cars.TryRemove(car_id, out Car car))
+            if (!_carsRepository.TryRemove(car_id, out Car car))
             {
                 return (null, ApiError.Gone($"Car {car_id} was already removed"));
             };
@@ -104,7 +89,7 @@ namespace Cars4Sale.Services
                 Id = car.Id,
                 UpdateCount = car.UpdateCount + 1
             };
-            if (!_Cars.TryUpdate(car_id, new_car, car))
+            if (!_carsRepository.TryUpdate(car_id, new_car, car))
             {
                 return (null, ApiError.Conflict($"Car (ID {car_id}) has been updated by someone else"));
             }
@@ -113,14 +98,9 @@ namespace Cars4Sale.Services
 
         private (Car, ApiError?) CheckAccess(ApiClient current_client, Guid car_id)
         {
-            return (!_Cars.TryGetValue(car_id, out Car car) || car.Client.ApiKey != current_client.ApiKey)
+            return (!_carsRepository.TryGetValue(car_id, out Car car) || car.Client.ApiKey != current_client.ApiKey)
                 ? (null, ApiError.Forbidden($"Car (ID {car_id}) is not under control of ${current_client.DealerName} or it does not exist"))
                 : (car, null);
-        }
-
-        public object GetService(Type serviceType)
-        {
-            throw new NotImplementedException();
         }
     }
 }
