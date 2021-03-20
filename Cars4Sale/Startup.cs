@@ -1,4 +1,3 @@
-using Cars4Sale.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +21,7 @@ namespace Cars4Sale
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {
@@ -34,6 +34,7 @@ namespace Cars4Sale
                         Email = "joe.ren@gmail.com",
                     }
                 });
+
                 var name = Assembly.GetExecutingAssembly().GetName().Name;
                 var xmlFile = $"{name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
