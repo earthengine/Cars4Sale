@@ -22,22 +22,22 @@ namespace Cars4Sale.Controllers
         /// <summary>
         /// Get all cars in a list, can be filtered by model or make, and can limit the result to the current dealer only.
         /// </summary>
-        /// <param name="model" example="Toyata">The car model to search, optional.</param>
-        /// <param name="make" example="Corola">The car make to search, optional.</param>
+        /// <param name="make" example="Toyota">The car make to search, optional.</param>
+        /// <param name="model" example="Corola">The car model to search, optional.</param>
         /// <param name="all" example="true">Set to true to get all vehicle details including from other dealers; false to only return cars for the current dealer.</param>
         /// <returns>The list of cars</returns>
         /// <response code="200">The result, a list of cars according to the filters.</response>
         [HttpGet]
         [ApiKey(Optional = true)]
         [ProducesResponseType(typeof(Car[]), StatusCodes.Status200OK)]
-        public IActionResult GetList(string model = null, string make = null, bool all = false)
+        public IActionResult GetList(string make = null, string model = null, bool all = false)
         {
             var current_client = HttpContext.Items["current_client"] as ApiClient;
             if (current_client == null) all = true;
-            return Ok(_carService.Get()
-                          .Where(x => model!=null ? x.Model.Contains(model) : true)
-                          .Where(x => make != null ? x.Model.Contains(make) : true)
-                          .Where(x => all ? true : x.Client == current_client));
+            return Ok(_carService.Get().Where(x => 
+                            (model == null || x.Model.Contains(model, StringComparison.InvariantCultureIgnoreCase)) &&
+                            (make == null || x.Make.Contains(make, StringComparison.InvariantCultureIgnoreCase)) &&
+                            (all || x.Client == current_client)));
         }
 
         /// <summary>
@@ -106,6 +106,7 @@ namespace Cars4Sale.Controllers
         ///     The car you are trying to remove was removed already by another similar request.
         /// </response>
         [HttpDelete]
+        [ApiKey]
         [Route("{car_id}")]
         [ProducesResponseType(typeof(RemovedCar), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
