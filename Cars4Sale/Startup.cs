@@ -22,12 +22,6 @@ namespace Cars4Sale
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication().AddMicrosoftAccount(o => 
-            {
-                o.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                o.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-            });
-            services.AddControllers(options => options.Filters.Add(new HttpResponseExceptionFilter()));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {
@@ -44,6 +38,29 @@ namespace Cars4Sale
                 var xmlFile = $"{name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header",
+                    Name = "ApiKey",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "JwtBearer"
+                            }
+                        }, new string[]{ }
+                    }
+                });
             });
         }
 
