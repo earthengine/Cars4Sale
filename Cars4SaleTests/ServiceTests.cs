@@ -139,7 +139,7 @@ namespace Cars4SaleTests
         [Test]
         public void CanRemoveCar()
         {
-            var car_to_get = Cars[0];
+            Car car_to_get = null;
             var car_to_remove = Cars[0];
             var try_get_value_called = false;
             var try_remove_called = false;
@@ -154,20 +154,24 @@ namespace Cars4SaleTests
 
             var cars_service = new CarsService(mock_repository.Object);
 
-            (var car, var maybe_error) = cars_service.RemoveCar(Clients[0], Cars[1].Id);
+            try_get_value_called = false;
+            (var car, var maybe_error) = cars_service.RemoveCar(Clients[0], Guid.NewGuid());
             Assert.That(try_get_value_called);
             Assert.That(!try_remove_called);
             Assert.That(car, Is.Null);
             Assert.That(maybe_error?.Reason, Does.Match("not under control .* does not exist"));
             Assert.That(maybe_error?.StatusCode, Is.EqualTo(403));
 
-            try_get_value_called = false;
-            (car, maybe_error) = cars_service.RemoveCar(Clients[0], Guid.NewGuid());
+            (car, maybe_error) = cars_service.RemoveCar(Clients[0], Cars[1].Id);
             Assert.That(try_get_value_called);
             Assert.That(!try_remove_called);
             Assert.That(car, Is.Null);
             Assert.That(maybe_error?.Reason, Does.Match("not under control .* does not exist"));
             Assert.That(maybe_error?.StatusCode, Is.EqualTo(403));
+
+            car_to_get = Cars[0];
+            mock_repository.Setup(v => v.TryGetValue(It.IsAny<Guid>(), out car_to_get))
+               .Returns((Guid _g, Car _c) => { try_get_value_called = true; return expected_try_get_value_result; });
 
             try_get_value_called = false;
             expected_try_get_value_result = true;

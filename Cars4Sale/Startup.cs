@@ -45,13 +45,13 @@ namespace Cars4Sale
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("ApiKeyAuth", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header",
                     Name = "ApiKey",
                     Type = SecuritySchemeType.ApiKey,
                     In = ParameterLocation.Header,
-                    Scheme = "Bearer"
+                    Scheme = "ApiKeyAuth"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -62,7 +62,7 @@ namespace Cars4Sale
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "JwtBearer"
+                                Id = "ApiKeyAuth"
                             }
                         }, new string[]{ }
                     }
