@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Cars4Sale
@@ -14,7 +13,7 @@ namespace Cars4Sale
     ///
     /// Since C# exceptions are unchecked, it is better to show
     /// posible error path in the function signature.
-    /// </summary>    
+    /// </summary>
     public struct ApiError
     {
         [JsonIgnore]

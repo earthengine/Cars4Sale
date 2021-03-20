@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Cars4Sale.Models
 {
+    /// <summary>
+    /// The request information about a new car.
+    /// </summary>
     public struct NewCar
     {
         /// <summary>
@@ -29,6 +29,10 @@ namespace Cars4Sale.Models
         /// <example>1</example>
         public int Stock { get; set; }
     }
+
+    /// <summary>
+    /// The returning information of a removal request.
+    /// </summary>
     public struct RemovedCar
     {
         /// <summary>
@@ -36,6 +40,10 @@ namespace Cars4Sale.Models
         /// </summary>
         public Car Removed { get; set; }
     }
+
+    /// <summary>
+    /// The returning information of an update request.
+    /// </summary>
     public struct UpdatedStock
     {
         /// <summary>
@@ -55,7 +63,9 @@ namespace Cars4Sale.Models
         public int To { get; internal set; }
     }
 
-
+    /// <summary>
+    /// A class that represents a car.
+    /// </summary>
     public class Car : IEquatable<Car>
     {
         /// <summary>
