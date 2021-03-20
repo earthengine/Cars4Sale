@@ -1,5 +1,6 @@
 ﻿using Cars4Sale.Attributes;
 using Cars4Sale.Models;
+using Cars4Sale.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,13 @@ namespace Cars4Sale.Controllers
     [Route("[controller]")]
     public class Cars4SaleController : ControllerBase
     {
+        private readonly ICarsService _carService;
+
+        public Cars4SaleController(ICarsService carService)
+        {
+            _carService = carService;
+        }
+
         /// <summary>
         /// Get all cars in a list, can be filtered by model or make, and can limit the result to the current dealer only.
         /// </summary>
@@ -26,7 +34,7 @@ namespace Cars4Sale.Controllers
         {
             var current_client = HttpContext.Items["current_client"] as ApiClient;
             if (current_client == null) all = true;
-            return Ok(Cars.Get()
+            return Ok(_carService.Get()
                           .Where(x => model!=null ? x.Model.Contains(model) : true)
                           .Where(x => make != null ? x.Model.Contains(make) : true)
                           .Where(x => all ? true : x.Client == current_client));
@@ -47,7 +55,7 @@ namespace Cars4Sale.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public IActionResult Get(Guid car_id)
         {
-            (var car, var maybe_error) = Cars.Get(car_id);
+            (var car, var maybe_error) = _carService.Get(car_id);
             if (maybe_error is ApiError error)
             {
                 return error.ToObjectResult();
@@ -77,7 +85,7 @@ namespace Cars4Sale.Controllers
         {
             var current_client = HttpContext.Items["current_client"] as ApiClient;
 
-            (var car, var maybe_error) = Cars.AddCar(current_client, new_car);
+            (var car, var maybe_error) = _carService.AddCar(current_client, new_car);
             if (maybe_error is ApiError error)
             {
                 return error.ToObjectResult();
@@ -106,7 +114,7 @@ namespace Cars4Sale.Controllers
         {
             var current_client = HttpContext.Items["current_client"] as ApiClient;
 
-            var (car, maybe_error) = Cars.RemoveCar(current_client, car_id);
+            var (car, maybe_error) = _carService.RemoveCar(current_client, car_id);
             if (maybe_error is ApiError error)
             {
                 return error.ToObjectResult();
@@ -137,7 +145,7 @@ namespace Cars4Sale.Controllers
         {
             var current_client = HttpContext.Items["current_client"] as ApiClient;
 
-            var (old_stock, maybe_error) = Cars.UpdateStock(current_client, car_id, new_stock);
+            var (old_stock, maybe_error) = _carService.UpdateStock(current_client, car_id, new_stock);
             if (maybe_error is ApiError error)
             {
                 return error.ToObjectResult();
