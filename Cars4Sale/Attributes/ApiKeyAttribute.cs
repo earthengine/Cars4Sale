@@ -37,7 +37,7 @@ namespace Cars4Sale.Attributes
                     await next();                    
                 } else
                 {
-                    context.Result = ApiError.Unauthorized(msg).ToContentResult();
+                    context.Result = ApiError.Unauthorized(msg).ToObjectResult();
                 }
                 return true;
             }

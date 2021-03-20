@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Cars4Sale
@@ -18,6 +19,10 @@ namespace Cars4Sale
     {
         [JsonIgnore]
         public int StatusCode { get; set; }
+        /// <summary>
+        /// The reason of the error.
+        /// </summary>
+        /// <example>Oops, something gone wrong...</example>
         public string Reason { get; set; }
 
         public static ApiError BadRequest(string reason)
@@ -49,9 +54,9 @@ namespace Cars4Sale
             return new ApiError { StatusCode = StatusCodes.Status500InternalServerError, Reason = reason };
         }
         
-        public ContentResult ToContentResult()
+        public ObjectResult ToObjectResult()
         {
-            return new ContentResult { ContentType = "text/plain", Content = Reason, StatusCode = StatusCode };
+            return new ObjectResult(this) { StatusCode = StatusCode };
         }
     }
 
