@@ -9,7 +9,7 @@ namespace Cars4Sale.Services
 {
     public class CarsRepository : ICarsRepository
     {
-        private ConcurrentDictionary<Guid, Car> _Cars = new ConcurrentDictionary<Guid, Car>(new Dictionary<Guid, Car> {
+        private static ConcurrentDictionary<Guid, Car> _Cars = new ConcurrentDictionary<Guid, Car>(new Dictionary<Guid, Car> {
             { new Guid("CAEACA2D-E407-49E3-8DDE-937A678B387B"), new Car {
                 Id = new Guid("CAEACA2D-E407-49E3-8DDE-937A678B387B"),
                 Make = "Toyota",
@@ -24,6 +24,14 @@ namespace Cars4Sale.Services
                 Model = "Benz Patent Motor",
                 Year = 1886,
                 Stock = 1,
+                Client = ApiClient.Clients.Values.ToArray()[1] }
+            },
+            { new Guid("{087F739A-19CB-4951-B8A6-25A4794F492A}"), new Car {
+                Id = new Guid("{087F739A-19CB-4951-B8A6-25A4794F492A}"),
+                Make = "Audi",
+                Model = "A4",
+                Year = 2020,
+                Stock = 15,
                 Client = ApiClient.Clients.Values.ToArray()[1] }
             },
         });
