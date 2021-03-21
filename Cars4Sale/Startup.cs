@@ -47,7 +47,7 @@ namespace Cars4Sale
 
                 c.AddSecurityDefinition("ApiKeyAuth", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header",
+                    Description = "API key authorization header",
                     Name = "ApiKey",
                     Type = SecuritySchemeType.ApiKey,
                     In = ParameterLocation.Header,
