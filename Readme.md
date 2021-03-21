@@ -1,5 +1,7 @@
 # Introduction
-Cars4Sales is a WEB API app written in ASP .NET core 
+Cars4Sales is a WEB API app written in ASP .NET core.
+
+It maintains a memory database for car models for different dealers (API users). The API allows the dealer to see all stock data, and update their own data.
 
 # Prerequsits
 
@@ -71,3 +73,11 @@ The system contains three car model data:
 
 There is no data validations implemented when creating a new car, except the year. The year can only be between 1886 and the current year,
 since there was no car before 1886 and the cars after this year havn't been built yet.
+
+# Resources
+
+Github repository:
+https://github.com/earthengine/Cars4Sale
+
+Docker image:
+https://hub.docker.com/repository/docker/earthengine/cars4sale
